@@ -8,7 +8,7 @@ class LRUCache:
     order, as well as a storage dict that provides fast access
     to every node stored in the cache.
     """
-    def __init__(self, limit=10):
+    def __init__(self, limit):
         self.limit = limit
         self.size = 0
         self.order = DoublyLinkedList()
@@ -23,19 +23,15 @@ class LRUCache:
     """
     def get(self, key):
         # check if key is in cache
-        if key in self.storage.keys():
+        print(26, key)
+        print(27, self.storage)
+        if key in self.storage:
             # retrieve the node with the value
-            node = self.storage
-            print(node.values)
-            # key/value pairs are stored in the nodes as tuples, thus access
-            # the value here via get at first index (the key is at index zero
-            value = node.values[1]
-            # make a new node at the head and updatedict entry
-            self.storage[key] = self.order.add_to_head((key, value))
-            # delete the original node
-            self.order.delete(node)
+            node = self.storage[key]
+            print("in storage")
+            self.order.move_to_end(node)
             # finall return the value
-            return value
+            return node.value[1]
         else:
             return None
 
@@ -51,26 +47,24 @@ class LRUCache:
     """
     def set(self, key, value):
         # first we need to see if the key is in the cache
-        if key in self.storage.keys():
+        print(49, self.limit, self.size)
+        if key in self.storage:
             print("key in storage map")
             # getthe node out of the dll from the dict
             nodeToHandle = self.storage[key]
-            # delete the node
-            self.order.delete(nodeToHandle)
-            # make a new node at the headand dict entry
-            self.storage[key] = self.order.add_to_head((key, value))
-        else:
-            if self.size == self.limit:
-                # pop the tail from the dll, grab the k/v
-                # remove that key from the storage map
-                keyToRemove: [] = self.order.remove_from_tail()
-                self.storage.pop(keyToRemove[0], None)
-                # add the new key to the storage map and to the dll
-                self.storage[key] = self.order.add_to_head((key, value))
-            else:
-                # increment the current node count
-                self.size += 1
-                # add the key at the front of the list
-                # and link the dict to the node
-                self.storage[key] = self.order.add_to_head((key, value))
+            print(53, nodeToHandle)
+            nodeToHandle.value = (key, value)
+            self.order.move_to_end(nodeToHandle)
+            return            
+        
+        if self.size == self.limit:
+            # pop the tail from the dll, grab the k/v
+            del self.storage[self.order.head.value[0]]
+      
+            self.order.remove_from_head()
+            self.size -= 1   
+        
+        self.order.add_to_tail((key,value))
+        self.storage[key] = self.order.tail
+        self.size += 1
         
