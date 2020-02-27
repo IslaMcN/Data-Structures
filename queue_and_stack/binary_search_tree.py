@@ -1,7 +1,7 @@
+from dll_stack import Stack
+from dll_queue import Queue
 import sys
 sys.path.append('../queue_and_stack')
-from dll_queue import Queue
-from dll_stack import Stack
 
 
 class BinarySearchTree:
@@ -12,21 +12,50 @@ class BinarySearchTree:
 
     # Insert the given value into the tree
     def insert(self, value):
-        pass
+        if value < self.value and self.left is None:
+            self.left = BinarySearchTree(value)
+            return self.left
+        elif value >= self.value and self.right is None:
+            self.right = BinarySearchTree(value)
+            return self.right
+        elif value < self.value:
+            return self.left.insert(value)
+        elif value >= self.value:
+            return self.right.insert(value)
+            
 
     # Return True if the tree contains the value
     # False if it does not
     def contains(self, target):
-        pass
+        current = self
+        while current is not None:
+            if self.value == target:
+                return True
+            # if target < current.value:
+            #     current = current.left
+            #     return contains(current)
+            # elif target > current.value:
+            #     current = current.right
+            #     return contains(current)
+        return False
 
     # Return the maximum value found in the tree
     def get_max(self):
-        pass
-
+        if not self.right:
+            return self.value
+        else:
+            return self.right.get_max()
+        
     # Call the function `cb` on the value of each node
     # You may use a recursive or iterative approach
     def for_each(self, cb):
-        pass
+        cb(self.value)
+        if self.left:
+            cb(self.left.value)
+            return self.left.for_each(cb)
+        if self.right:
+            cb(self.right.value)
+            return self.right.for_each(cb)
 
     # DAY 2 Project -----------------------
 
@@ -55,3 +84,8 @@ class BinarySearchTree:
     # Print Post-order recursive DFT
     def post_order_dft(self, node):
         pass
+
+
+
+
+
